@@ -1,0 +1,41 @@
+{
+  "name": "jest-tesults-reporter",
+  "version": "1.0.0",
+  "description": "Tesults reporter for Jest",
+  "main": "tesults-reporter.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "jest",
+    "reporter",
+    "tesults",
+    "test",
+    "results",
+    "automation",
+    "automated",
+    "dashboard",
+    "reporting"
+  ],
+  "author": {
+    "name": "Tesults",
+    "email": "support@tesults.com",
+    "url": "https://www.tesults.com"
+  },
+  "contributors": [
+    {
+      "name": "Ajeet Dhaliwal",
+      "email": "ajeet.dhaliwal@tesults.com"
+    }
+  ],
+  "maintainers": [
+    {
+      "name": "Ajeet Dhaliwal",
+      "email": "ajeet.dhaliwal@tesults.com"
+    }
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "tesults": "^1.1.0"
+  }
+}

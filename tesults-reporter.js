@@ -81,6 +81,7 @@ class TesultsReporter {
                 if (this._options[filesKey] !== undefined) {
                     tesultsCase.files = this.caseFiles(this._options[filesKey], tesultsCase.suite, tesultsCase.name);
                 }
+                tesultsCase.duration = c.duration;
                 tesultsCases.push(tesultsCase);
             }
         }

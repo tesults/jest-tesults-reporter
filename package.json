@@ -1,6 +1,6 @@
 {
   "name": "jest-tesults-reporter",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Tesults reporter for Jest",
   "main": "tesults-reporter.js",
   "scripts": {

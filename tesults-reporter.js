@@ -180,6 +180,11 @@ class TesultsReporter {
             target: this._options[targetKey],
             results: {
                 cases: tesultsCases
+            },
+            metadata: {
+                integration_name: "jest-tesults-reporter",
+                integration_version: "1.2.1",
+                test_framework: "jest"
             }
         }
         

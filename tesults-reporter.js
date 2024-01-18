@@ -57,7 +57,13 @@ class TesultsReporter {
         return files;
     }
 
-    onRunStart (results, options) {}
+    onRunStart (results, options) {
+        try {
+            setSupplementalData({})
+        } catch (err) {
+            console.log("tesults-reporter error initializing supplemental data: " + err)
+        }
+    }
 
     onTestStart (test) {}
 
@@ -183,7 +189,7 @@ class TesultsReporter {
             },
             metadata: {
                 integration_name: "jest-tesults-reporter",
-                integration_version: "1.2.1",
+                integration_version: "1.2.2",
                 test_framework: "jest"
             }
         }

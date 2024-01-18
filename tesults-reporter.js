@@ -111,7 +111,7 @@ class TesultsReporter {
                 tesultsCase.duration = c.duration;
 
                 // Add supplemental data
-                const key = suite.testFilePath + "-" + c.title
+                const key = suite.testFilePath + "-" + c.fullName
                 const supplemental = getSupplementalData()
                 const data = supplemental[key]
                 if (data !== undefined) {
@@ -189,7 +189,7 @@ class TesultsReporter {
             },
             metadata: {
                 integration_name: "jest-tesults-reporter",
-                integration_version: "1.2.2",
+                integration_version: "1.2.3",
                 test_framework: "jest"
             }
         }

@@ -27,7 +27,7 @@ const setSupplementalData = (data) => {
 class TesultsReporter {
     constructor(globalConfig, options) {
         this._globalConfig = globalConfig;
-        this._options = options;
+        this._options = options || {};
     }
 
     caseFiles (dir, suite, name) {
@@ -71,13 +71,19 @@ class TesultsReporter {
 
     onRunComplete(contexts, results) {
         const targetKey = "tesults-target";
+        const outputFileKey = "tesults-output-file";
         const filesKey = "tesults-files";
         const buildNameKey = "tesults-build-name";
         const buildDescKey = "tesults-build-desc";
         const buildResultKey = "tesults-build-result";
         const buildReasonKey = "tesults-build-reason";
+        const target = this._options[targetKey];
+        const outputFile = (
+            process.env.TESULTS_OUTPUT_FILE !== undefined &&
+            process.env.TESULTS_OUTPUT_FILE !== ""
+        ) ? process.env.TESULTS_OUTPUT_FILE : this._options[outputFileKey];
 
-        if (this._options[targetKey] === undefined) {
+        if (target === undefined && outputFile === undefined) {
             console.log(targetKey + " not provided. Tesults disabled.");
             return;
         }
@@ -109,6 +115,21 @@ class TesultsReporter {
                     tesultsCase.files = this.caseFiles(this._options[filesKey], tesultsCase.suite, tesultsCase.name);
                 }
                 tesultsCase.duration = c.duration;
+                if (
+                    suite.testFilePath !== undefined &&
+                    c.location !== undefined &&
+                    Number.isInteger(c.location.line) &&
+                    c.location.line > 0
+                ) {
+                    let location = {
+                        file: suite.testFilePath,
+                        line: c.location.line
+                    };
+                    if (Number.isInteger(c.location.column) && c.location.column > 0) {
+                        location.column = c.location.column;
+                    }
+                    tesultsCase._Location = JSON.stringify(location);
+                }
 
                 // Add supplemental data
                 const key = suite.testFilePath + "-" + c.fullName
@@ -183,27 +204,54 @@ class TesultsReporter {
         }
 
         let data = {
-            target: this._options[targetKey],
+            target: target,
             results: {
                 cases: tesultsCases
             },
             metadata: {
                 integration_name: "jest-tesults-reporter",
-                integration_version: "1.2.3",
+                integration_version: "1.3.0",
                 test_framework: "jest"
             }
         }
-        
+
+        let outputError;
+        if (outputFile !== undefined) {
+            try {
+                const outputData = { ...data, target: "" };
+                fs.mkdirSync(path.dirname(outputFile), { recursive: true });
+                fs.writeFileSync(outputFile, JSON.stringify(outputData, null, 2));
+                console.log('Tesults results written to ' + outputFile);
+            } catch (err) {
+                outputError = err;
+                console.log('Tesults error, failed to write results file.');
+            }
+        }
+
+        if (target === undefined) {
+            if (outputError !== undefined) {
+                return Promise.reject(outputError);
+            }
+            return;
+        }
+
         console.log('Tesults results upload...');
-        tesults.results(data, function (err, response) {
-            if (err) {
-                // err is undefined unless there is a library error
-                console.log('Tesults library error, failed to upload.');
-            } else {
-                console.log('Success: ' + response.success);
-                console.log('Message: ' + response.message);
-                console.log('Warnings: ' + response.warnings.length);
-                console.log('Errors: ' + response.errors.length);
+        return new Promise((resolve) => {
+            tesults.results(data, function (err, response) {
+                if (err) {
+                    // Preserve existing behavior: upload errors are logged without failing Jest.
+                    console.log('Tesults library error, failed to upload.');
+                } else {
+                    console.log('Success: ' + response.success);
+                    console.log('Message: ' + response.message);
+                    console.log('Warnings: ' + response.warnings.length);
+                    console.log('Errors: ' + response.errors.length);
+                }
+                resolve();
+            });
+        }).then(() => {
+            if (outputError !== undefined) {
+                return Promise.reject(outputError);
             }
         });
     }

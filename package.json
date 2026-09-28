@@ -1,10 +1,10 @@
 {
   "name": "jest-tesults-reporter",
-  "version": "1.2.3",
+  "version": "1.3.0",
   "description": "Tesults reporter for Jest",
   "main": "tesults-reporter.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node test.js"
   },
   "keywords": [
     "jest",
